@@ -1,2 +1,9 @@
-# .zsh-conf
-Configuration files for zsh
+# Configuration files for zsh
+
+Add
+
+```zsh
+source $HOME/.zsh-conf/init.sh
+```
+
+to `.zshrc` to use these configurations.
