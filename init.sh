@@ -17,6 +17,8 @@ plugins=(
     iterm2
     vscode
     z
+    # This one has to go last
+    zsh-syntax-highlighting
 )
 source $ZSH/oh-my-zsh.sh
 
