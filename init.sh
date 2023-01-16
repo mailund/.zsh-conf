@@ -21,6 +21,6 @@ plugins=(
 source $ZSH/oh-my-zsh.sh
 
 # Loading other configurations
-source ~/.zsh-conf/genome-dk.sh
+# source ~/.zsh-conf/genome-dk.sh
 source ~/.zsh-conf/functions.sh
 source ~/.zsh-conf/alias.sh
