@@ -13,6 +13,7 @@ ZSH_THEME="minimal"
 # Setting plugins...
 plugins=(
     brew
+    poetry
     git
     github
     iterm2
@@ -25,6 +26,9 @@ source $ZSH/oh-my-zsh.sh
 source ~/.zsh-conf/functions.sh
 source ~/.zsh-conf/alias.sh
 
+# Set bat as default pager and set its theme
+export PAGER=bat
+export BAT_THEME=zenburn
 
 
 ## Overwriting the prompt
