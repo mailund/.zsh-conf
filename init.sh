@@ -23,6 +23,9 @@ plugins=(
 )
 source $ZSH/oh-my-zsh.sh
 
+# Loading AWS stuff
+source ~/.zsh-conf/aws.sh
+
 # Loading other configurations
 source ~/.zsh-conf/functions.sh
 source ~/.zsh-conf/alias.sh
