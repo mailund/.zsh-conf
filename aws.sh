@@ -63,8 +63,23 @@ maws() {
 
 # Subcommand to list instances with a specific name pattern and build the ID-Name map
 ec2_list() {
-    for key val in "${(@kv)ID_NAME_MAP}"; do
-        echo "$key: $val"
+    # Calculate column widths
+    local max_name_length=$(col_width ${(@k)NAME_ID_MAP})
+    local max_id_length=$(col_width ${(@v)NAME_ID_MAP})
+
+    local format="%-${max_name_length}s %-$(($max_id_length))s\n"
+
+    # Print the header
+    printf "$format" "Name" "Instance ID"
+
+    # Print the separator
+    printf "%-${max_name_length}s %-${max_id_length}s %s\n" \
+        "$(repeat_char $max_name_length '-')" \
+        "$(repeat_char $max_id_length '-')" 
+
+    # Print the rows
+    for key val in "${(@kv)NAME_ID_MAP}"; do
+        printf "$format" "$key" "$val"
     done
 }
 
@@ -147,28 +162,10 @@ print_formatted_table() {
     local ids=${(@k)NAME_TO_ID}
     local states=${(@k)NAME_TO_STATUS}
 
-
     # Calculate column widths
-    local max_name_length=0
-    local max_id_length=0
-    local max_status_length=0
-    local name_length id_length status_length
-
-    for name in ${(@k)NAME_TO_ID}; do
-        name_length=${#name}
-        id_length=${#${NAME_TO_ID[$name]}}
-        status_length=${#${NAME_TO_STATUS[$name]}}
-
-        if (( name_length > max_name_length )); then
-            max_name_length=$name_length
-        fi
-        if (( id_length > max_id_length )); then
-            max_id_length=$id_length
-        fi
-        if (( status_length > max_status_length )); then
-            max_status_length=$status_length
-        fi
-    done
+    local max_name_length=$(col_width ${(@k)NAME_TO_ID})
+    local max_id_length=$(col_width ${(@v)NAME_TO_ID})
+    local max_status_length=$(col_width ${(@v)NAME_TO_STATUS})
 
     local format="%-${max_name_length}s %-$(($max_id_length))s %s\n"
 
@@ -185,6 +182,16 @@ print_formatted_table() {
     for name in ${(k)NAME_TO_ID}; do
         printf "$format" "$name" "${NAME_TO_ID[$name]}" $(state_col "${NAME_TO_STATUS[$name]}")
     done
+}
+
+col_width() {
+    local max=0
+    for val in "$@"; do
+        if (( ${#val} > max )); then
+            max=${#val}
+        fi
+    done
+    echo $max
 }
 
 repeat_char() {
