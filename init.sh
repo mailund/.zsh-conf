@@ -71,27 +71,27 @@ function virtualenv_info {
     [ $VIRTUAL_ENV ] && echo '('`basename $VIRTUAL_ENV`') '
 }
 
-# Determines prompt modifier if and when a conda environment is active
-conda config --set changeps1 False
-precmd_conda_info() {
-  if [[ -n $CONDA_PREFIX ]]; then
-      if [[ $(basename $CONDA_PREFIX) == "anaconda3" ]]; then
-        # Without this, it would display conda version
-        CONDA_ENV="@base"
-      else
-        # For all environments that aren't (base)
-        CONDA_ENV="@$(basename $CONDA_PREFIX)"
-      fi
-  # When no conda environment is active, don't show anything
-  else
-    CONDA_ENV=""
-  fi
-}
+# # Determines prompt modifier if and when a conda environment is active
+# conda config --set changeps1 False
+# precmd_conda_info() {
+#   if [[ -n $CONDA_PREFIX ]]; then
+#       if [[ $(basename $CONDA_PREFIX) == "anaconda3" ]]; then
+#         # Without this, it would display conda version
+#         CONDA_ENV="@base"
+#       else
+#         # For all environments that aren't (base)
+#         CONDA_ENV="@$(basename $CONDA_PREFIX)"
+#       fi
+#   # When no conda environment is active, don't show anything
+#   else
+#     CONDA_ENV=""
+#   fi
+# }
 
-# Run the previously defined function before each prompt
-precmd_functions+=( precmd_conda_info )
+# # Run the previously defined function before each prompt
+# precmd_functions+=( precmd_conda_info )
 
-# Allow substitutions and expansions in the prompt
-setopt prompt_subst
-autoload -U colors && colors
-PROMPT='%F{cyan}%2~%F{reset} $(vcs_status) %F{141}$CONDA_ENV %F{green}@$(virtualenv_info)%F{reset}% '$'\n''»%b '
+# # Allow substitutions and expansions in the prompt
+# setopt prompt_subst
+# autoload -U colors && colors
+# PROMPT='%F{cyan}%2~%F{reset} $(vcs_status) %F{141}$CONDA_ENV %F{green}@$(virtualenv_info)%F{reset}% '$'\n''»%b '
