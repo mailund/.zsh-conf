@@ -7,7 +7,7 @@ ec2_load() {
     local name_pattern="$1"
     local instances=$(
         aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=*$name_pattern*" \
+            --filters "Name=tag:Name,Values=$name_pattern" \
             --query "Reservations[*].Instances[*].[InstanceId, Tags[?Key=='Name'].Value | [0]]" \
             --output text)
 
@@ -19,11 +19,11 @@ ec2_load() {
 
 # Main function to handle subcommands
 maws() {
-    local pattern="Mailund" # look for instances with this pattern
+    local pattern="*Mailund*" # look for instances with this pattern
     while getopts ":p:" opt; do
         case ${opt} in
             p)
-            pattern=$OPTARG
+            pattern="*${OPTARG}*"
             ;;
             *)
             usage
