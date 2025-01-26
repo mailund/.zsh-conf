@@ -1,4 +1,4 @@
-show_bazel_deps() {
+bazel_deps() {
     local target=$1
     shift
     local tags=""

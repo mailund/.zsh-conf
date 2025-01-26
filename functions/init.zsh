@@ -1,7 +1,4 @@
 
 for f in *.zsh; do
-    if [ "$f" = "init.zsh" ]; then
-        continue
-    fi
-    source $f
+    [ -f $f ] && [ "$f" != "init.zsh" ] && source $f
 done

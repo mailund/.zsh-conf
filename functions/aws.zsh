@@ -1,4 +1,3 @@
-#!/bin/zsh
 
 declare -A ID_NAME_MAP=()
 declare -A NAME_ID_MAP=()
@@ -12,9 +11,9 @@ ec2_load() {
             --output text)
 
     while read -r instance_id instance_name; do
-        ID_NAME_MAP[$instance_id]=$instance_name
-        NAME_ID_MAP[$instance_name]=$instance_id
-    done <<< $instances
+        ID_NAME_MAP["$instance_id"]="$instance_name"
+        NAME_ID_MAP["$instance_name"]="$instance_id"
+    done <<< "$instances"
 }
 
 # Main function to handle subcommands
