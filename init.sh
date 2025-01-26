@@ -1,4 +1,21 @@
 
+# Update this configuration before we continue...
+if [ ! -d ~/.zsh-conf ]; then
+    echo "Please clone this repo to ~/.zsh-conf"
+    exit 1
+else
+    original_dir=$(pwd)
+    cd /Users/mailund/.zsh-conf || exit
+    git fetch
+
+    # Check if the local repository is behind the remote
+    if ! git diff --quiet HEAD..origin/$(git rev-parse --abbrev-ref HEAD); then
+        echo "Updates to zhs-conf available. Running git pull..."
+        git pull
+    fi
+    cd "$original_dir"
+fi
+
 # Configuring...
 zstyle ':omz:update' mode auto      # update automatically without asking
 ENABLE_CORRECTION="true"
