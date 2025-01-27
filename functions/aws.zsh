@@ -1,3 +1,5 @@
+echo "AWS"
+
 
 declare -A ID_NAME_MAP=()
 declare -A NAME_ID_MAP=()
