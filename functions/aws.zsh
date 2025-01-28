@@ -1,5 +1,3 @@
-echo "AWS"
-
 
 declare -A ID_NAME_MAP=()
 declare -A NAME_ID_MAP=()
@@ -98,6 +96,7 @@ ec2_start() {
         instance_ids+=("${NAME_ID_MAP[$name]}")
     done
 
+    echo "Starting instances: ${instance_id}"
     aws ec2 start-instances --instance-ids ${instance_ids}
 }
 
