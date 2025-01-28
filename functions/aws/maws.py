@@ -5,6 +5,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import aws_cmds
 from instance_dicts import get_instance_dicts
 from typedefs import Instance2Name, Name2Instance
 
@@ -21,8 +22,10 @@ def status(args: argparse.Namespace) -> None:
 
     for error in errors:
         print(f"Instance {error} not found")
-    for name, instance_id in success.items():
-        print(name, instance_id)
+
+    status = aws_cmds.status(list(success.values()))
+    for name, state in status.items():
+        print(name, state)
 
 
 def start(args: argparse.Namespace) -> None:
