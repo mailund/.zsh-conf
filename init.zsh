@@ -5,10 +5,7 @@ _runindir() {
     cd -- "$mydir"
  }
  _init_dir() {
-    mydir=$(pwd)
-    cd $1
-    source init.zsh
-    cd $mydir
+    _runindir $1 source init.zsh
  }
 
 _update_zsh_conf() {
@@ -20,22 +17,26 @@ _update_zsh_conf() {
     fi
 }
 
+_get_default_venv() {
+    if ! [ -d "$HOME/.zsh-conf-venv" ]; then
+        echo "Creating default venv..."
+        python3 -m venv "$HOME/.zsh-conf-venv"
+    fi
+}
+_call_python() {
+    "$HOME/.zsh-conf-venv/bin/python" "$@"
+}
+
 # # Updating .zsh-conf
 _runindir ~/.zsh-conf _update_zsh_conf
 
+# Update Python venv
+_get_default_venv
+
 # # Handle plugins and functions
 _init_dir ~/.zsh-conf/plugins
+_init_dir ~/.zsh-conf/functions
 
-# I don't fucking understand why the _init_dir doesn't work for maws
-mydir=$(pwd)
-    cd ~/.zsh-conf/functions/
-    source init.zsh
-cd $mydir
-# source ~/.zsh-conf/functions/aws.zsh
-# _runindir ~/.zsh-conf/functions source init.zsh
-
-## Alias for displaying dot files in iTerm
-alias idot="dot -Tpng -Gbgcolor=black -Nfontcolor=white -Nfontsize=26 -Efontcolor=white -Efontsize=26 -Ncolor=white -Ecolor=white | imgcat"
 
 # Configuring...
 zstyle ':omz:update' mode auto      # update automatically without asking

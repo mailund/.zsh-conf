@@ -3,6 +3,14 @@ import os
 import subprocess
 import sys
 
+try:
+    import rich
+except ImportError:
+    subprocess.run([sys.executable, "-m", "pip", "install", "rich"])
+    import rich
+
+from rich import print
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import aws_cmds
@@ -11,7 +19,7 @@ from typedefs import Instance2Name, Name2Instance
 
 
 def status(args: argparse.Namespace) -> None:
-    args.instances or list(NAME2ID.keys())
+    instance_names = args.instances or list(NAME2ID.keys())
     instances = {name: NAME2ID.get(name, None) for name in instance_names}
     errors = [name for name, instance_id in instances.items() if instance_id is None]
     success = {
@@ -21,7 +29,9 @@ def status(args: argparse.Namespace) -> None:
     }
 
     for error in errors:
-        print(f"Instance {error} not found")
+        print(f"[bright_black]Instance {error} not found :confused:")
+    if not success:
+        return
 
     status = aws_cmds.status(list(success.values()))
     for name, state in status.items():
@@ -39,7 +49,8 @@ def stop(args: argparse.Namespace) -> None:
 if __name__ == "__main__":
     ID2NAME, NAME2ID = get_instance_dicts()
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser("maws")
+
     commands = parser.add_subparsers(dest="command")
 
     status_group = commands.add_parser("status")
