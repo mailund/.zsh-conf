@@ -1,11 +1,10 @@
 import json
 import subprocess
-from typing import Any, Iterator, NewType, Optional
+from typing import Any, Iterator, Optional
+
+from typedefs import Instance2Name, Name2Instance
 
 __INSTANCE_PATTERN__ = "*Mailund*"
-
-Instance2Name = NewType("Instance2Name", dict[str, str])
-Name2Instance = NewType("Name2Instance", dict[str, str])
 
 
 def _load_instances() -> Iterator[dict[str, Any]]:
@@ -50,7 +49,7 @@ def _map_id_names(
         if instance_name is not None:
             id2name[instance_id] = instance_name
             name2id[instance_name] = instance_id
-    return id2name, name2id
+    return Instance2Name(id2name), Name2Instance(name2id)
 
 
 def get_instance_dicts() -> tuple[Instance2Name, Name2Instance]:
