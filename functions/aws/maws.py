@@ -11,7 +11,7 @@ from typedefs import Instance2Name, Name2Instance
 
 
 def status(args: argparse.Namespace) -> None:
-    instance_names = args.instances or list(NAME2ID.keys())
+    args.instances or list(NAME2ID.keys())
     instances = {name: NAME2ID.get(name, None) for name in instance_names}
     errors = [name for name, instance_id in instances.items() if instance_id is None]
     success = {
@@ -29,11 +29,11 @@ def status(args: argparse.Namespace) -> None:
 
 
 def start(args: argparse.Namespace) -> None:
-    pass
+    aws_cmds.start(args.instances)
 
 
 def stop(args: argparse.Namespace) -> None:
-    pass
+    aws_cmds.stop(args.instances)
 
 
 if __name__ == "__main__":
@@ -48,9 +48,11 @@ if __name__ == "__main__":
 
     start_group = commands.add_parser("start")
     start_group.set_defaults(func=start)
+    start_group.add_argument("instances", nargs="+")
 
     stop_group = commands.add_parser("stop")
     stop_group.set_defaults(func=stop)
+    stop_group.add_argument("instances", nargs="+")
 
     args = parser.parse_args()
     if not args.command:
