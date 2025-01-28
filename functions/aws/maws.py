@@ -18,8 +18,7 @@ from instance_dicts import get_instance_dicts
 from typedefs import Instance2Name, Name2Instance
 
 
-def status(args: argparse.Namespace) -> None:
-    instance_names = args.instances or list(NAME2ID.keys())
+def instance_status(instance_names: list[str]) -> None:
     instances = {name: NAME2ID.get(name, None) for name in instance_names}
     errors = [name for name, instance_id in instances.items() if instance_id is None]
     success = {
@@ -31,19 +30,37 @@ def status(args: argparse.Namespace) -> None:
     for error in errors:
         print(f"[bright_black]Instance {error} not found :confused:")
     if not success:
+        print("[bright_black]No instances found :confounded_face:")
         return
 
     status = aws_cmds.status(list(success.values()))
+    status_map = {
+        "running": "[bold green]running[/bold green] :green_circle:",
+        "stopped": "[bright_black]stopped[/bright_black] :red_circle:",
+    }
     for name, state in status.items():
-        print(name, state)
+        print(f"[underline]{name}:", status_map.get(state, state))
+
+
+def status(args: argparse.Namespace) -> None:
+    instance_names = args.instances or list(NAME2ID.keys())
+    instance_status(instance_names)
 
 
 def start(args: argparse.Namespace) -> None:
-    aws_cmds.start(args.instances)
+    instance_ids = [NAME2ID[name] for name in args.instances]
+    print("Starting instances...")
+    aws_cmds.start(instance_ids)
+    print("...done")
+    instance_status(args.instances)
 
 
 def stop(args: argparse.Namespace) -> None:
-    aws_cmds.stop(args.instances)
+    instance_ids = [NAME2ID[name] for name in args.instances]
+    print("Stopping instances...")
+    aws_cmds.stop(instance_ids)
+    print("...done")
+    instance_status(args.instances)
 
 
 if __name__ == "__main__":
