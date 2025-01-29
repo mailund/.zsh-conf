@@ -4,6 +4,8 @@ from typing import Any, Iterator, Optional
 
 from .typedefs import Instance2Name, Name2Instance
 
+# FIXME: This pattern doesn't work any more, for some reason.
+# Maybe better to filter on the Python side.
 __INSTANCE_PATTERN__ = "*Mailund*"
 
 
