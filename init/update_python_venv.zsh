@@ -16,7 +16,9 @@ unset package
 deactivate
 
 _call_python() {
-    source ${ZSH_CONF_PYTHON_VENV}/bin/activate
-    eval "$@"
-    deactivate
+    (
+        source "${ZSH_CONF_PYTHON_VENV}/bin/activate"
+        eval "$@"
+        deactivate
+    )
 }

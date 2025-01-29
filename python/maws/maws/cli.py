@@ -1,16 +1,14 @@
 import argparse
-import os
-import subprocess
 import sys
 
 from rich import print
 
-from .aws_cmds import AwsCmds
+from .aws_cmds import AwsCmds, InstanceId, InstanceName
 
 cmds = AwsCmds()
 
 
-def instance_status(instance_names: list[str] | None) -> None:
+def instance_status(instance_names: list[InstanceName] | None) -> None:
     instances = cmds.instances(instance_names)
     errors = [name for name, instance_id in instances.items() if instance_id is None]
     success = {

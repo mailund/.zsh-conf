@@ -31,6 +31,7 @@ source $ZSH_CONF_HOME/alias.zsh
 # Setting plugins...
 zstyle :omz:plugins:iterm2 shell-integration yes
 plugins=(
+    git
     iterm2
 
     # This one has to go last
