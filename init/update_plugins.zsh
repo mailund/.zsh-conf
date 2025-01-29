@@ -17,16 +17,3 @@ if ! [ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/completion/bazel ]; then
         https://raw.githubusercontent.com/bazelbuild/bazel/master/scripts/zsh_completion/_bazel
 fi
 
-
-# Setting plugins...
-plugins=(
-    bazel
-    brew
-    git
-    github
-    iterm2
-    virtualenv
-
-    # This one has to go last
-    zsh-syntax-highlighting
-)

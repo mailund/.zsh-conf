@@ -1,4 +1,13 @@
 
+ZSH_CONF_HOME=~/.zsh-conf
+ZSH_CONF_PYTHON_VENV=~/.zsh-conf-venv
+ZSH_CONF_PYTHON=$ZSH_CONF_HOME/python
+
+# Update zsh-conf installation
+source $ZSH_CONF_HOME/init/update_zsh_conf.zsh
+source $ZSH_CONF_HOME/init/update_python_venv.zsh
+source $ZSH_CONF_HOME/init/update_plugins.zsh
+
 _runindir() { 
     mydir=$(pwd)
     cd -- "$1" && shift && eval " $@"
@@ -8,34 +17,25 @@ _runindir() {
     _runindir $1 source init.zsh
  }
 
-_update_zsh_conf() {
-    git fetch
-    # Check if the local repository is behind the remote
-    if ! git diff --quiet HEAD..origin/$(git rev-parse --abbrev-ref HEAD); then
-        echo "Updates to zhs-conf available. Running git pull..."
-        git pull
-    fi
-}
+# Setup zsh-conf functions
+fpath=(
+    ${ZSH_CONF_HOME}/functions
+    "${fpath[@]}"
+)
+autoload -U $fpath[1]/*(.:t)
 
-_get_default_venv() {
-    if ! [ -d "$HOME/.zsh-conf-venv" ]; then
-        echo "Creating default venv..."
-        python3 -m venv "$HOME/.zsh-conf-venv"
-    fi
-}
-_call_python() {
-    "$HOME/.zsh-conf-venv/bin/python" "$@"
-}
 
-# # Updating .zsh-conf
-_runindir ~/.zsh-conf _update_zsh_conf
+# And get aliases
+source $ZSH_CONF_HOME/alias.zsh
 
-# Update Python venv
-_get_default_venv
+# Setting plugins...
+zstyle :omz:plugins:iterm2 shell-integration yes
+plugins=(
+    iterm2
 
-# # Handle plugins and functions
-_init_dir ~/.zsh-conf/plugins
-_init_dir ~/.zsh-conf/functions
+    # This one has to go last
+    zsh-syntax-highlighting
+)
 
 
 # Configuring...

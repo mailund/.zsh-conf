@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "maws"
+version = "0.1.0"
+description = "Talking to AWS"
+dependencies = [
+    "rich",
+]
+
+[tool.setuptools]
+packages = ["maws"]
+
+[project.scripts]
+maws_main = "maws.cli:main"

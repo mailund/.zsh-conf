@@ -2,7 +2,7 @@ import json
 import subprocess
 from typing import Any, Iterator, Optional
 
-from typedefs import Instance2Name, Name2Instance
+from .typedefs import Instance2Name, Name2Instance
 
 __INSTANCE_PATTERN__ = "*Mailund*"
 

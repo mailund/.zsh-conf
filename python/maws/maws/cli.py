@@ -3,23 +3,15 @@ import os
 import subprocess
 import sys
 
-try:
-    import rich
-except ImportError:
-    subprocess.run([sys.executable, "-m", "pip", "install", "rich"])
-    import rich
-
 from rich import print
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from .aws_cmds import AwsCmds
 
-import aws_cmds
-from instance_dicts import get_instance_dicts
-from typedefs import Instance2Name, Name2Instance
+cmds = AwsCmds()
 
 
-def instance_status(instance_names: list[str]) -> None:
-    instances = {name: NAME2ID.get(name, None) for name in instance_names}
+def instance_status(instance_names: list[str] | None) -> None:
+    instances = cmds.instances(instance_names)
     errors = [name for name, instance_id in instances.items() if instance_id is None]
     success = {
         name: instance_id
@@ -33,7 +25,7 @@ def instance_status(instance_names: list[str]) -> None:
         print("[bright_black]No instances found :confounded_face:")
         return
 
-    status = aws_cmds.status(list(success.values()))
+    status = cmds.status(list(success.values()))
     status_map = {
         "running": "[bold green]running[/bold green] :green_circle:",
         "stopped": "[bright_black]stopped[/bright_black] :red_circle:",
@@ -43,28 +35,24 @@ def instance_status(instance_names: list[str]) -> None:
 
 
 def status(args: argparse.Namespace) -> None:
-    instance_names = args.instances or list(NAME2ID.keys())
-    instance_status(instance_names)
+    instance_status(args.instances or None)
 
 
 def start(args: argparse.Namespace) -> None:
-    instance_ids = [NAME2ID[name] for name in args.instances]
     print("Starting instances...")
-    aws_cmds.start(instance_ids)
+    cmds.start(args.instances)
     print("...done")
     instance_status(args.instances)
 
 
 def stop(args: argparse.Namespace) -> None:
-    instance_ids = [NAME2ID[name] for name in args.instances]
     print("Stopping instances...")
-    aws_cmds.stop(instance_ids)
+    cmds.stop(args.instances)
     print("...done")
     instance_status(args.instances)
 
 
-if __name__ == "__main__":
-    ID2NAME, NAME2ID = get_instance_dicts()
+def main():
 
     parser = argparse.ArgumentParser("maws")
 
@@ -88,3 +76,7 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         args.func(args)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,22 @@
+if ! [ -d ${ZSH_CONF_PYTHON_VENV} ]; then
+    echo "Creating zsh-conf default venv..."
+    python3 -m venv ZSH_CONF_PYTHON_VENV
+fi
+[ -d ${ZSH_CONF_PYTHON} ] || mkdir -p ${ZSH_CONF_PYTHON} || echo "Error creating ${ZSH_CONF_PYTHON}"
+
+source ${ZSH_CONF_PYTHON_VENV}/bin/activate
+
+for package in "${ZSH_CONF_PYTHON}"/*; do
+    if [ -d "${package}" ] && [ -f "{package}/pyproject.toml" ]; then
+        pip install -e "${package}" || echo "Error installing $(basename ${package})"
+    fi
+done
+
+unset package
+deactivate
+
+_call_python() {
+    source ${ZSH_CONF_PYTHON_VENV}/bin/activate
+    eval "$@"
+    deactivate
+}
