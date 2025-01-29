@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from rich import print
+from rich.table import Table
 
 from .aws_cmds import AwsCmds, InstanceName
 
@@ -25,11 +26,21 @@ def instance_status(instance_names: list[InstanceName] | None) -> None:
 
     status = cmds.status(list(success.keys()))
     status_map = {
-        "running": "[bold green]running[/bold green] :green_circle:",
-        "stopped": "[bright_black]stopped[/bright_black] :red_circle:",
+        "running": "[bold green]running[/bold green]",
+        "stopped": "[red]stopped[/red]",
     }
+    status_icon = {
+        "running": ":green_circle:",
+        "stopped": ":red_circle:",
+    }
+
+    table = Table(title="Instance status", min_width=80)
+    table.add_column()
+    table.add_column("Name", justify="left", no_wrap=True)
+    table.add_column("Status", style="magenta", justify="left")
     for name, state in status.items():
-        print(f"[underline]{name}:", status_map.get(state, state))
+        table.add_row(status_icon.get(state, ""), name, status_map.get(state, state))
+    print(table)
 
 
 def status(args: argparse.Namespace) -> None:
