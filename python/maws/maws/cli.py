@@ -3,7 +3,7 @@ import sys
 
 from rich import print
 
-from .aws_cmds import AwsCmds, InstanceId, InstanceName
+from .aws_cmds import AwsCmds, InstanceName
 
 cmds = AwsCmds()
 
@@ -23,7 +23,7 @@ def instance_status(instance_names: list[InstanceName] | None) -> None:
         print("[bright_black]No instances found :confounded_face:")
         return
 
-    status = cmds.status(list(success.values()))
+    status = cmds.status(list(success.keys()))
     status_map = {
         "running": "[bold green]running[/bold green] :green_circle:",
         "stopped": "[bright_black]stopped[/bright_black] :red_circle:",

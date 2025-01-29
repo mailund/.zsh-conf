@@ -1,3 +1,4 @@
+import functools
 import json
 import subprocess
 from typing import Any, Iterator, NewType, Optional
@@ -38,40 +39,41 @@ def _instance_id_and_name(instance: dict[str, Any]) -> tuple[str, Optional[str]]
 
 
 class AwsCmds:
-    name2id: Name2Instance
-    id2name: Instance2Name
 
     def __init__(self):
-        self.name2id = Name2Instance({})
-        self.id2name = Instance2Name({})
+        pass
+
+    @functools.cached_property
+    def name_table(self) -> Name2Instance:
+        name2id = Name2Instance({})
+        id2name = Instance2Name({})
 
         instances = _load_instances()
         for instance in instances:
             instance_id, instance_name = _instance_id_and_name(instance)
             if instance_name is not None and "mailund" in instance_name.lower():
-                self.id2name[InstanceId(instance_id)] = InstanceName(instance_name)
-                self.name2id[InstanceName(instance_name)] = InstanceId(instance_id)
+                id2name[InstanceId(instance_id)] = InstanceName(instance_name)
+                name2id[InstanceName(instance_name)] = InstanceId(instance_id)
+
+        return name2id
 
     def instances(
         self, names: list[InstanceName] | None = None
     ) -> dict[InstanceName, InstanceId | None]:
-        names = names or list(self.name2id.keys())
+        names = names or list(self.name_table.keys())
         map = {
-            name: None if name not in self.name2id else self.name2id[name]
+            name: None if name not in self.name_table else self.name_table[name]
             for name in names
         }
-        print("map", map)
         return map
 
-    def status(self, names: list[InstanceName] | None) -> dict[str, str]:
-        names = names or list(self.name2id.keys())
-        print("names", names)
+    def status(self, names: list[InstanceName] | None) -> dict[InstanceName, str]:
+        names = names or list(self.name_table.keys())
         instance_ids = [
             instance_id
             for instance_id in self.instances(names).values()
             if instance_id is not None
         ]
-        print(instance_ids)
         query_result = subprocess.check_output(
             [
                 "aws",
@@ -87,16 +89,16 @@ class AwsCmds:
         )
         result_lines = query_result.decode("utf-8").strip().split("\n")
         result_parsed = [line.split("\t") for line in result_lines]
-        return {name: state for name, _, state in result_parsed}
+        return {InstanceName(name): state for name, _, state in result_parsed}
 
-    def start(self, names: list[InstanceName]):
-        instance_ids = [self.name2id[name] for name in names]
+    def start(self, names: list[InstanceName]) -> None:
+        instance_ids = [self.name_table[name] for name in names]
         subprocess.run(
             ["aws", "ec2", "start-instances", "--instance-ids", *instance_ids]
         )
 
-    def stop(self, names: list[InstanceName]):
-        instance_ids = [self.name2id[name] for name in names]
+    def stop(self, names: list[InstanceName]) -> None:
+        instance_ids = [self.name_table[name] for name in names]
         subprocess.run(
             ["aws", "ec2", "stop-instances", "--instance-ids", *instance_ids]
         )
