@@ -1,11 +1,9 @@
-print()  { echo "$@" >&2 }
-yield()  { echo "$@"     }
 
 activate_dirs() {
     local dir
     for dir in $(find . -mindepth 1 -maxdepth 1 -type d); do
         if [ -f "$dir/bin/activate" ]; then
-            yield $dir
+            echo $dir
         fi
     done
 }
@@ -13,14 +11,14 @@ activate_dirs() {
 select_venv() {
     local candidates=("$@")
 
-    if [ ${#candidates[@]} -eq 0 ]; then
-        print "No virtual environments found." 
+    if [[ ${#candidates[@]} -eq 0 ]]; then
+        echo "No virtual environments found." >&2
         return 1
-    elif [ ${#candidates[@]} -eq 1 ]; then
-        yield "${candidates[1]}"
+    elif [[ ${#candidates[@]} -eq 1 ]]; then
+        echo "${candidates[1]}"
     else
-        print "Multiple virtual environments found." 
-        print "Please select one:" 
+        echo "Multiple virtual environments found." >&2
+        echo "Please select one:" >&2
         select venv_dir in "${candidates[@]}"; do
             [ -n "$venv_dir" ] && echo "$venv_dir" && return
         done
