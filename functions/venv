@@ -1,0 +1,45 @@
+# Activate a venv if we have one
+
+subdirs() {
+    find . -mindepth 1 -maxdepth 1 -type d
+}
+
+search_for_venv() {
+    local dir
+    for dir in `subdirs`; do
+        if [ -f "$dir/bin/activate" ]; then
+            echo "$dir"        
+        fi
+    done
+}
+
+# Locate venv
+if [ "$#" -eq 1 ]; then
+    venv_dir=$1
+elif [ "$#" -eq 0 ]; then
+    candidates=$(search_for_venv)
+    if [ -z "$candidates" ]; then
+        echo "No virtual environment found."
+        return 1
+    elif [ `echo "$candidates" | wc -l` -gt 1 ]; then
+        echo "Multiple virtual environments found."
+        echo "Candidates: $candidates"
+        return 1
+    else
+        venv_dir=$(echo "$candidates" | head -n 1)
+    fi
+else
+    echo "Usage: venv [<path_to_virtualenv>]"
+    return 1
+fi
+
+
+venv_activate="$venv_dir/bin/activate"
+if [ -f "$venv_activate" ]; then
+    source "$venv_activate" && \
+        echo "Activated virtual environment: $venv_dir" || \
+        echo "Failed to activate virtual environment: $venv_dir"
+else
+    echo "Virtual environment not found at: $venv_dir"
+    return 1
+fi
