@@ -43,3 +43,4 @@ export BAT_THEME=zenburn
 ZSH_THEME="af-magic"
 source $ZSH/oh-my-zsh.sh
 
+PATH="${HOME}/bin:/opt/homebrew/bin:$PATH"
