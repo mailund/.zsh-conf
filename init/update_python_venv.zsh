@@ -1,6 +1,6 @@
 if ! [ -d ${ZSH_CONF_PYTHON_VENV} ]; then
     echo "Creating zsh-conf default venv..."
-    python3 -m venv ZSH_CONF_PYTHON_VENV
+    python3 -m venv ${ZSH_CONF_PYTHON_VENV} || echo "Error creating zsh-conf default venv" 
 fi
 [ -d ${ZSH_CONF_PYTHON} ] || mkdir -p ${ZSH_CONF_PYTHON} || echo "Error creating ${ZSH_CONF_PYTHON}"
 

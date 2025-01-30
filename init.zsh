@@ -1,21 +1,12 @@
 
-ZSH_CONF_HOME=~/.zsh-conf
-ZSH_CONF_PYTHON_VENV=~/.zsh-conf-venv
+ZSH_CONF_HOME=${HOME}/.zsh-conf
+ZSH_CONF_PYTHON_VENV=${HOME}/.zsh-conf-venv
 ZSH_CONF_PYTHON=$ZSH_CONF_HOME/python
 
 # Update zsh-conf installation
 source $ZSH_CONF_HOME/init/update_zsh_conf.zsh
 source $ZSH_CONF_HOME/init/update_python_venv.zsh
 source $ZSH_CONF_HOME/init/update_plugins.zsh
-
-_runindir() { 
-    mydir=$(pwd)
-    cd -- "$1" && shift && eval " $@"
-    cd -- "$mydir"
- }
- _init_dir() {
-    _runindir $1 source init.zsh
- }
 
 # Setup zsh-conf functions
 fpath=(
