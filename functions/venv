@@ -39,5 +39,5 @@ activate_venv() {
     fi
 }
 
-venv_dir=$(select_venv $(activate_dirs)) || exit 1
+venv_dir=$(select_venv $(activate_dirs)) || return 1
 activate_venv "$venv_dir"

@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "moddot"
+version = "0.1.0"
+description = "Modifying dot files"
+dependencies = [
+    "pydot",
+]
+
+[tool.setuptools]
+packages = ["moddot"]
+
+[project.scripts]
+moddot_main = "moddot.cli:main"

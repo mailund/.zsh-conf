@@ -1,21 +1,49 @@
 local target=$1
 shift
-local tags=""
 local output_format=""
+
+split() {
+    local values=()
+    IFS=',' read -rA values <<< "$1"
+    echo "${values[@]}"
+}
+
+join() {
+    print -R ${(j: intersect :)@}
+}
+
+include_tags=()
+
+query_terms=( "deps(${target})" )
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --package ) tags="package"; shift ;;
-        --module ) tags="(package|module)"; shift ;;
-        --graph ) output_format="--output graph"; shift ;;
-        -- ) shift; break ;;
-        * ) break ;;
+        --graph ) 
+            output_format="--output graph"
+            ;;
+        --tags )
+            include_tags+=( $(split $2) )
+            shift
+            ;;
+        -- )
+            break 
+            ;;
+        * ) 
+            echo "Unknown option: $1"
+            ;;
     esac
+    shift
 done
 
-local query="deps(${target})"
-if [[ -n $tags ]]; then
-    query="attr(tags, \"${tags}\", //...) intersect ${query}"
+if [[ -n $include_tags ]]; then
+    query_terms+=( "attr(tags, \"$(IFS='|'; echo "${include_tags[*]}")\", //...)" )
 fi
-local cmd="bazel query '${query}' --noimplicit_deps ${output_format}"
-eval "$cmd"
+
+query=$(join "${query_terms[@]}")
+
+# echo "Query: '${query}'"
+
+
+cmd="bazel query '${query}' --noimplicit_deps ${output_format}"
+# echo "Running: ${cmd}"
+eval $cmd

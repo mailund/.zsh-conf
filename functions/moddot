@@ -1,0 +1,2 @@
+
+_call_python moddot_main "$@"

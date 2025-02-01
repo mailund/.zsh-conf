@@ -38,6 +38,7 @@ COMPLETION_WAITING_DOTS="true"
 # Set bat as default pager and set its theme
 export PAGER=bat
 export BAT_THEME=zenburn
+export BAT_STYLE=-numbers,plain
 
 # Theme
 ZSH_THEME="af-magic"
