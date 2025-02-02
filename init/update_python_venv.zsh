@@ -1,6 +1,7 @@
 if ! [ -d ${ZSH_CONF_PYTHON_VENV} ]; then
     echo "Creating zsh-conf default venv..."
     python3 -m venv ${ZSH_CONF_PYTHON_VENV} || echo "Error creating zsh-conf default venv" 
+    echo 'export PYTHONPATH="$HOME/.zsh-conf/python:$PYTHONPATH"' >> ${ZSH_CONF_PYTHON_VENV}/bin/activate
 fi
 [ -d ${ZSH_CONF_PYTHON} ] || mkdir -p ${ZSH_CONF_PYTHON} || echo "Error creating ${ZSH_CONF_PYTHON}"
 
