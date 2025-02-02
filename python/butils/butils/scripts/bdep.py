@@ -82,7 +82,6 @@ def main() -> None:
     )
     graph = Graph(bazel_deps)
 
-    # FIXME: make these into options
     target_prefix = args.target.rsplit("/", 1)[0]
     graph.node_strip_prefix(args.strip_prefix or target_prefix)
     graph.node_re_replace(
