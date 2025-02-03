@@ -9,7 +9,9 @@ source ${ZSH_CONF_PYTHON_VENV}/bin/activate
 
 for package in "${ZSH_CONF_PYTHON}"/*; do
     if [ -d "${package}" ] && [ -f "{package}/pyproject.toml" ]; then
-        pip install -e "${package}" || echo "Error installing $(basename ${package})"
+        cd "${package}"
+        pip install -e . || echo "Error installing $(basename ${package})"
+        cd ..
     fi
 done
 
