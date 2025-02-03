@@ -4,8 +4,8 @@ import subprocess
 from moddot import Graph
 
 
-def collect_tags(tags: list[list[str]]) -> list[str]:
-    return [tag for tag_list in tags for tag in tag_list]
+def collect_tags(tags: list[list[str]] | None) -> list[str]:
+    return [] if tags is None else [tag for tag_list in tags for tag in tag_list]
 
 
 def tag_filter(tags: list[str]) -> list[str]:
