@@ -7,7 +7,13 @@ fixit_start() {
     git stash -b $branch
 
     # Create new branch from main
-    git checkout main
+    if [[ -n $(git pull) ]]; then
+        echo "Please resolve conflicts before continuing"
+        return
+    fi
+    if [[ $PUSHED_GIT_BRANCH != "main" ]]; then
+        git checkout main
+    fi
     git pull
     git checkout -b $branch
 }
