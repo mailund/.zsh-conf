@@ -22,7 +22,7 @@ fixit_done() {
     git add .
     git commit -am "$@"
     git push --set-upstream origin $PUSHED_GIT_BRANCH
-    echo Opening pull request...
+
     gh pr create --web --title "$@" --body "$@"
 
     # Restore pushed state
