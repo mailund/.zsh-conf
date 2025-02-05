@@ -14,12 +14,12 @@ fixit_start() {
 
 fixit_done() {
     # Turn changes into a pull request
-    if [[ "$1" == "" ]]; then
+    if [[ -n $@ || "$1" == "" ]]; then
         echo "Please provide a title for the pull request"
         return
     fi
     git add .
-    git commit -am "$@"
+    git commit -am "$1"
     git push --set-upstream origin $PUSHED_GIT_BRANCH
     echo Opening pull request...
     gh pr create --web --title $1 --body $1
