@@ -1,0 +1,29 @@
+fixit_start() {
+    local branch=$1
+
+    export PUSHED_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+    echo git stash $branch
+
+    git checkout main
+    git pull
+    git checkout -b $branch
+}
+
+fixit_done() {
+    git commit -am $1
+    git push --set-upstream origin $PUSHED_GIT_BRANCH
+    gh pr create --web --title $1 --body $1
+
+    git checkout $PUSHED_GIT_BRANCH
+    git stash pop $PUSHED_GIT_BRANCH    
+}
+
+fixit() {
+    if [[ "$1" == "done" ]]; then
+        shift
+        fixit_done $@
+    else
+        fixit_start $@
+    fi
+}
