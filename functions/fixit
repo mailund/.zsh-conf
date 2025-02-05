@@ -4,7 +4,7 @@ fixit_start() {
     export PUSHED_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
     # Save state
-    git stash $branch
+    git stash
 
     # Create new branch from main
     if [[ $PUSHED_GIT_BRANCH != "main" ]]; then
@@ -27,7 +27,7 @@ fixit_done() {
 
     # Restore pushed state
     git checkout $PUSHED_GIT_BRANCH
-    git stash pop $PUSHED_GIT_BRANCH    
+    git stash pop
 }
 
 if [[ "$1" == "done" ]]; then
