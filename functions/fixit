@@ -4,7 +4,7 @@ fixit_start() {
     export PUSHED_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
     # Save state
-    git stash
+    git stash push
 
     # Create new branch from main
     if [[ $PUSHED_GIT_BRANCH != "main" ]]; then
