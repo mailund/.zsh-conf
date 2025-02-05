@@ -4,31 +4,26 @@ fixit_start() {
     export PUSHED_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
     # Save state
-    git stash -b $branch
+    git stash $branch
 
     # Create new branch from main
-    if [[ -n $(git pull) ]]; then
-        echo "Please resolve conflicts before continuing"
-        return
-    fi
     if [[ $PUSHED_GIT_BRANCH != "main" ]]; then
         git checkout main
     fi
-    git pull
     git checkout -b $branch
 }
 
 fixit_done() {
     # Turn changes into a pull request
-    if [[ -n $@ || "$1" == "" ]]; then
-        echo "Please provide a title for the pull request"
-        return
+    if [[ -z "$*" ]]; then
+        echo "Error: No title provided for the pull request"
+        return 1
     fi
     git add .
-    git commit -am "$1"
+    git commit -am "$@"
     git push --set-upstream origin $PUSHED_GIT_BRANCH
     echo Opening pull request...
-    gh pr create --web --title $1 --body $1
+    gh pr create --web --title "$@" --body "$@"
 
     # Restore pushed state
     git checkout $PUSHED_GIT_BRANCH
