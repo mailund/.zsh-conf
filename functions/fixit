@@ -4,7 +4,11 @@ fixit_start() {
     export PUSHED_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
     # Save state
+<<<<<<< Updated upstream
     git stash push
+=======
+    git stash
+>>>>>>> Stashed changes
 
     # Create new branch from main
     if [[ $PUSHED_GIT_BRANCH != "main" ]]; then
