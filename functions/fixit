@@ -81,7 +81,11 @@ fixit_done() {
        return 1
    fi
    git add . || { echo "Error: Failed to add changes."; return 1; }
-   git commit -am "$commit_message" || { echo "Error: Failed to commit changes."; return 1; }
+    if [[ -n "$(git status --porcelain)" ]]; then
+        git commit -am "$commit_message" || { echo "Error: Failed to commit changes."; return 1; }
+    else
+        echo "No changes to commit."
+    fi
 
    current_branch=$(read_state_file)
    if [[ -n "$current_branch" ]]; then
@@ -103,7 +107,7 @@ fixit_clear() {
    echo "Branch entry removed from state file."
 }
 
-set -e
+# set -e
 
 if [[ "$1" == "done" ]]; then
    fixit_done
