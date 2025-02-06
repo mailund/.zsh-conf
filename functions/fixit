@@ -107,7 +107,7 @@ fixit_clear() {
    echo "Branch entry removed from state file."
 }
 
-# set -e
+set -e
 
 if [[ "$1" == "done" ]]; then
    fixit_done
