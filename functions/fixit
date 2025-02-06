@@ -33,8 +33,8 @@ fixit_start() {
    local branch=$1
 
    # Check for dependencies
-   command -v git >/dev/null 2>&1 || { echo >&2 "git is required but it's not installed. Aborting."; exit 1; }
-   command -v gh >/dev/null 2>&1 || { echo >&2 "gh is required but it's not installed. Aborting."; exit 1; }
+   command -v git >/dev/null 2>&1 || echo >&2 "git is required but it's not installed. Aborting." && return 1
+   command -v gh >/dev/null 2>&1 || echo >&2 "gh is required but it's not installed. Aborting." && return 1
 
    # Check if the state file already has a branch
    current_branch=$(read_state_file)
@@ -112,7 +112,7 @@ elif [[ "$1" == "clear" ]]; then
 else
    if [[ -z "$1" ]]; then
        echo "Error: No branch name provided."
-       exit 1
+       return 1
    fi
    fixit_start "$@"
 fi
