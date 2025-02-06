@@ -1,38 +1,118 @@
+# Function to read the current branch from the state file
+read_state_file() {
+   local state_file="$HOME/.fixit-state"
+   local branch=""
+
+   if [ -f "$state_file" ]; then
+       branch=$(awk -F "=" '/branch/{print $2}' "$state_file")
+   fi
+
+   echo "$branch"
+}
+
+# Function to write the current branch to the state file
+write_state_file() {
+   local branch=$1
+   local state_file="$HOME/.fixit-state"
+
+   if [ -f "$state_file" ]; then
+       echo "branch=$branch" >> "$state_file"
+   else
+       echo "[state]" > "$state_file"
+       echo "branch=$branch" >> "$state_file"
+   fi
+}
+
+# Function to remove the branch entry from the state file
+remove_branch_from_state_file() {
+   local state_file="$HOME/.fixit-state"
+   sed -i '/branch/d' "$state_file"
+}
+
 fixit_start() {
-    local branch=$1
+   local branch=$1
 
-    export PUSHED_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+   # Check for dependencies
+   command -v git >/dev/null 2>&1 || { echo >&2 "git is required but it's not installed. Aborting."; exit 1; }
+   command -v gh >/dev/null 2>&1 || { echo >&2 "gh is required but it's not installed. Aborting."; exit 1; }
 
-    # Save state
-    git stash push
+   # Check if the state file already has a branch
+   current_branch=$(read_state_file)
+   if [[ -n "$current_branch" ]]; then
+       echo "Error: State file already contains a branch ($current_branch). Aborting."
+       return 1
+   fi
 
-    # Create new branch from main
-    if [[ $PUSHED_GIT_BRANCH != "main" ]]; then
-        git checkout main
-    fi
-    git checkout -b $branch
+   # Check for untracked files
+   if [[ -n $(git ls-files --others --exclude-standard) ]]; then
+       echo "Error: There are untracked files in the working directory. Aborting."
+       return 1
+   fi
+
+   # Save current branch to a file
+   current_branch=$(git rev-parse --abbrev-ref HEAD)
+   if [ $? -ne 0 ]; then
+       echo "Error: Failed to get current branch."
+       return 1
+   fi
+
+   write_state_file "$current_branch"
+
+   # Save state with a named stash
+   git stash push -m "fixit-$current_branch" || { echo "Error: Failed to stash changes."; return 1; }
+
+   # Create new branch from main
+   if [[ "$current_branch" != "main" ]]; then
+       git checkout main || { echo "Error: Failed to checkout main."; return 1; }
+   fi
+   git checkout -b "$branch" || { echo "Error: Failed to create new branch $branch."; return 1; }
 }
 
 fixit_done() {
-    # Turn changes into a pull request
-    if [[ -z "$*" ]]; then
-        echo "Error: No title provided for the pull request"
-        return 1
-    fi
-    git add .
-    git commit -am "$@"
-    git push --set-upstream origin $PUSHED_GIT_BRANCH
+   local current_branch
 
-    gh pr create --web --title "$@" --body "$@"
+   # Prompt for commit message
+   echo "Enter the commit message: "
+   read commit_message
 
-    # Restore pushed state
-    git checkout $PUSHED_GIT_BRANCH
-    git stash pop
+   # Turn changes into a pull request
+   if [[ -z "$commit_message" ]]; then
+       echo "Error: No commit message provided"
+       return 1
+   fi
+   git add . || { echo "Error: Failed to add changes."; return 1; }
+   git commit -am "$commit_message" || { echo "Error: Failed to commit changes."; return 1; }
+
+   current_branch=$(read_state_file)
+   if [[ -n "$current_branch" ]]; then
+       git push --set-upstream origin "$current_branch" || { echo "Error: Failed to push changes."; return 1; }
+       gh pr create --web --title "$commit_message" --body "$commit_message" || { echo "Error: Failed to create pull request."; return 1; }
+
+       # Restore pushed state
+       git checkout "$current_branch" || { echo "Error: Failed to checkout original branch."; return 1; }
+       remove_branch_from_state_file # Remove the branch entry
+       git stash pop "stash^{/fixit-$current_branch}" || { echo "Error: Failed to pop stash."; return 1; }
+   else
+       echo "Error: No branch information found in state file."
+       return 1
+   fi
 }
 
+fixit_clear() {
+   remove_branch_from_state_file
+   echo "Branch entry removed from state file."
+}
+
+set -e
+
 if [[ "$1" == "done" ]]; then
-    shift
-    fixit_done $@
+   fixit_done
+elif [[ "$1" == "clear" ]]; then
+   fixit_clear
 else
-    fixit_start $@
+   if [[ -z "$1" ]]; then
+       echo "Error: No branch name provided."
+       exit 1
+   fi
+   fixit_start "$@"
 fi
