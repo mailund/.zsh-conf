@@ -26,7 +26,7 @@ write_state_file() {
 # Function to remove the branch entry from the state file
 remove_branch_from_state_file() {
    local state_file="$HOME/.fixit-state"
-   sed -i '/branch/d' "$state_file"
+   sed -i '' '/branch/d' "$state_file"
 }
 
 fixit_start() {
