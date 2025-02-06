@@ -33,10 +33,12 @@ fixit_start() {
    local branch=$1
 
    # Check for dependencies
-   command -v git >/dev/null 2>&1 || echo >&2 "git is required but it's not installed. Aborting." && return 1
-   command -v gh >/dev/null 2>&1 || echo >&2 "gh is required but it's not installed. Aborting." && return 1
+   echo "Checking dependencies..."
+   command -v git >/dev/null 2>&1 || { echo >&2 "git is required but it's not installed. Aborting."; return 1 }
+   command -v gh >/dev/null 2>&1 || { echo >&2 "gh is required but it's not installed. Aborting."; return 1 }
 
    # Check if the state file already has a branch
+   echo "Checking state file..."
    current_branch=$(read_state_file)
    if [[ -n "$current_branch" ]]; then
        echo "Error: State file already contains a branch ($current_branch). Aborting."
@@ -107,7 +109,7 @@ fixit_clear() {
    echo "Branch entry removed from state file."
 }
 
-set -e
+# set -e
 
 if [[ "$1" == "done" ]]; then
    fixit_done
