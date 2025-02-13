@@ -45,3 +45,4 @@ ZSH_THEME="af-magic"
 source $ZSH/oh-my-zsh.sh
 
 PATH="${HOME}/bin:/opt/homebrew/bin:$PATH"
+export JAVA_HOME=$(/usr/libexec/java_home)
