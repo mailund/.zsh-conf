@@ -4,7 +4,6 @@ from functools import partial
 from typing import Iterator
 
 import uniplot
-from xxlimited import Str
 
 plot = partial(uniplot.plot, height=15, width=80)
 
@@ -20,10 +19,10 @@ def load_data(fnames: list[str]) -> Iterator[dict[str, list[str]]]:
         with open(fname) as inp:
             lines = skip_comments(inp)
             header = [h.strip() for h in next(lines).split(",")]
-            cols: list[list[Str()]] = [[] for _ in header]
+            cols: list[list[str]] = [[] for _ in header]
             for line in lines:
-                for d, v in zip(cols, line.split(",")):
-                    d.append(v.strip())
+                for col, value in zip(cols, line.split(",")):
+                    col.append(value.strip())
 
         data = {h: v for h, v in zip(header, cols)}
         assert len(cols) > 0
@@ -31,8 +30,8 @@ def load_data(fnames: list[str]) -> Iterator[dict[str, list[str]]]:
         yield data
 
 
-def merge_data(data: Iterator[dict[str, list[float]]]) -> dict[str, list[float]]:
-    merged = {}
+def merge_data(data: Iterator[dict[str, list[str]]]) -> dict[str, list[str]]:
+    merged: dict[str, list[str]] = {}
     for d in data:
         for k, v in d.items():
             if k not in merged:

@@ -18,7 +18,6 @@ update_zsh_python() {
         fi
     done
     unset package
-
     deactivate
 }
 
