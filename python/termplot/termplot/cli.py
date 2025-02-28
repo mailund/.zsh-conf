@@ -74,7 +74,7 @@ def main() -> None:
 
     keys = [key.strip() for key in args.keys.split(",")]
     data = merge_data(load_data([f.name for f in args.input]))
-    plot_data(keys, data, "sample")
+    plot_data(keys, data, "c")
 
 
 if __name__ == "__main__":
