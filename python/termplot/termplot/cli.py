@@ -58,7 +58,6 @@ def plot_data(
             if col is None
             else split(data[col], data[key])
         )
-        print(len(vals), len(vals[0]))
         plot(vals, title=key, lines=True, color=True)
 
 
