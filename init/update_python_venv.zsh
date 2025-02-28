@@ -5,18 +5,22 @@ if ! [ -d ${ZSH_CONF_PYTHON_VENV} ]; then
 fi
 [ -d ${ZSH_CONF_PYTHON} ] || mkdir -p ${ZSH_CONF_PYTHON} || echo "Error creating ${ZSH_CONF_PYTHON}"
 
-source ${ZSH_CONF_PYTHON_VENV}/bin/activate
 
-for package in "${ZSH_CONF_PYTHON}"/*; do
-    if [ -d "${package}" ] && [ -f "{package}/pyproject.toml" ]; then
-        cd "${package}"
-        pip install -e . || echo "Error installing $(basename ${package})"
-        cd ..
-    fi
-done
+update_zsh_python() {
+    echo "Updating zsh-conf python packages... (this might take a while)"
+    source ${ZSH_CONF_PYTHON_VENV}/bin/activate
 
-unset package
-deactivate
+    for package in "${ZSH_CONF_PYTHON}"/*; do
+        if [ -d "${package}" ] && [ -f "${package}/pyproject.toml" ]; then
+            cd "${package}"
+            pip install -e . > /dev/null || echo "Error installing $(basename ${package})"
+            cd ..
+        fi
+    done
+    unset package
+
+    deactivate
+}
 
 _call_python() {
     (

@@ -1,0 +1,22 @@
+# FIXME: For the FUCKING life of me I cannot figure out why
+# it installs the outer and not the inner moddot package
+# I have tried everything I can think of and it just doesn't work.
+# I don't have time to fuck around with it any longer righ tnow.
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "termplot"
+version = "0.1.0"
+description = "Plotting in the terminal"
+dependencies = [
+    "uniplot",
+]
+
+[tool.setuptools]
+packages = ["termplot"]
+
+[project.scripts]
+termplot_main = "termplot.cli:main"
